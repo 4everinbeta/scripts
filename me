@@ -1,0 +1,22 @@
+#!/bin/bash
+HN=$(hostname)
+HOSTIP=$(ifconfig | grep inet | grep -oE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}.*255$" | grep -oE "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}")
+VPN_IP=$(ifconfig `route get ${HN} | grep "interface: " | sed "s/[^:]*: \(.*\)/\1/"` | grep "inet " | sed "s/.*inet \([0-9.]*\) .*/\1/")
+PRSN1_VPN=$(host vpn1.pearson.com | grep -m 1 "has address" | awk '{printf "%s", $4}')
+PRSN2_VPN=$(host vpn2.pearson.com | grep -m 1 "has address" | awk '{printf "%s", $4}')
+WORK_VPN=$(host corpvpn.ecollege.com | grep -m 1 "has address" | awk '{printf "%s", $4}')
+
+echo "Hostname: " ${HN}
+echo "LocalIp: " ${HOSTIP}
+if [ -n "$PRSN1_VPN" ]
+then
+  echo -e "On Pearson VPN1.\n\tAddress: " ${VPN_IP}  
+elif [ -n "$PRSN2_VPN" ]
+then
+  echo -e "On Pearson VPN2.\n\tAddress: " ${VPN_IP} 
+elif [ -n "$WORK_VPN" ]
+then
+  echo -e "On corpvpn.\n\tAddress: " ${VPN_IP}
+else
+  echo "No vpn found"
+fi
