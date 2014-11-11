@@ -1,0 +1,12 @@
+Reload = fun(M) ->
+                 code:purge(M),
+                 code:soft_purge(M),
+                 {module, M} = code:load_file(M),
+                 {ok, M}
+         end.
+ 
+ReloadAll =
+ fun() ->
+         Modules = [M || {M, P} <- code:all_loaded(), is_list(P) andalso string:str(P, "/Users/browrk/workspace/erlang") > 0],
+         [Reload(M) || M <- Modules]
+ end.
